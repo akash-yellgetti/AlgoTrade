@@ -3,8 +3,9 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {debounceTime, map, startWith, switchMap} from 'rxjs/operators';
-import { MoneyControlService } from 'src/app/core/services/api/money-control/money-control.service';
-
+import * as _ from 'lodash';
+import { MoneyControlService } from '../../../core/services/api/money-control/money-control.service';
+import { SubjectService } from '../../../core/services/common/subject/subject.service';
 @Component({
   selector: 'app-input-auto-complete',
   templateUrl: './input-auto-complete.component.html',
@@ -15,7 +16,7 @@ export class InputAutoCompleteComponent implements OnInit {
   autoCompleteOptions$: Observable<string[]>;
   autoCompleteControl = new FormControl();
 
-  constructor(private moneyControl: MoneyControlService) {
+  constructor(private moneyControlService: MoneyControlService, private subjectService: SubjectService) {
     
   }
 
@@ -26,7 +27,7 @@ export class InputAutoCompleteComponent implements OnInit {
       debounceTime(300),
       // use switch map so as to cancel previous subscribed events, before creating new once
       switchMap(value => {
-        if (value !== '') {
+        if (!_.isObject(value) && value !== '') {
           // lookup from github
           return this.lookup(value);
         } else {
@@ -44,15 +45,14 @@ export class InputAutoCompleteComponent implements OnInit {
   }
 
   lookup(value: string)  {
-    return this.moneyControl.search(value.toLowerCase());
+    return this.moneyControlService.search(_.toLower(value));
   }
 
   displayFn(item: any): string {
     return item && item.stock_name ? item.stock_name : '';
   }
 
-  selectedOption(evt) {
-    console.log(evt);
-    
+  selectedOption(evt: any) {
+    this.subjectService.setSelectedShare(evt);
   }
 }

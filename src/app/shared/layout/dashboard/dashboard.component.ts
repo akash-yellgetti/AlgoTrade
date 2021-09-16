@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { dashboard } from 'src/app/core/json/dashboard';
+import { SubjectService } from 'src/app/core/services/common/subject/subject.service';
+import { MoneyControlService } from 'src/app/core/services/api/money-control/money-control.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,6 +32,19 @@ export class DashboardComponent {
       ];
     })
   );
+  public dashboard = dashboard;
+  constructor(private breakpointObserver: BreakpointObserver,private subjectService: SubjectService, private moneyControlService: MoneyControlService) {}
+  ngOnInit() {
+    this.subjectService.getSelectedShare().subscribe((share) => {
+      this.getInfo(share)
+    });
+  }
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  getInfo = (share: any) => {
+    this.moneyControlService.info(_.get(share, 'sc_id')).subscribe((res) => {
+      console.log(res);
+      
+    })
+  }
+  
 }

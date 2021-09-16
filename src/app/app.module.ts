@@ -12,19 +12,12 @@ import { LeftSidebarComponent } from './shared/layout/left-sidebar/left-sidebar.
 import { InputAutoCompleteComponent } from './shared/common/input-auto-complete/input-auto-complete.component';
 import { DynamicTableComponent } from './shared/common/dynamic-table/dynamic-table.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DataTablesModule } from 'angular-datatables';
 import { MaterialModule } from './modules/material/material.module';
 import { MoneyControlModule } from './modules/money-control/money-control.module';
 import { NavigationComponent } from './shared/layout/navigation/navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
 import { DashboardComponent } from './shared/layout/dashboard/dashboard.component';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -47,14 +40,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MaterialModule,
     MoneyControlModule,
     LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule,
-    MatGridListModule,
-    MatCardModule,
-    MatMenuModule
+    DataTablesModule
   ],
   providers: [],
   bootstrap: [AppComponent]
