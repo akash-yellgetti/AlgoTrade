@@ -25,3 +25,16 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+ng g s core/services/api/money-control/money-control
+
+ng g c shared/common/input-auto-complete
+ng g c shared/common/dynamic-table
+
+
+ng g m modules/material --module=app
+
+
+ng generate @angular/material:navigation shared/layout/navigation
+ng generate @angular/material:dashboard shared/layout/dashboard
