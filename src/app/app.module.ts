@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './shared/layout/header/header.component';
 import { FooterComponent } from './shared/layout/footer/footer.component';
@@ -18,6 +17,7 @@ import { MoneyControlModule } from './modules/money-control/money-control.module
 import { NavigationComponent } from './shared/layout/navigation/navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
 import { DashboardComponent } from './shared/layout/dashboard/dashboard.component';
+import { DatatableComponent } from './../app/shared/common/datatable/datatable.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,8 @@ import { DashboardComponent } from './shared/layout/dashboard/dashboard.componen
     InputAutoCompleteComponent,
     DynamicTableComponent,
     NavigationComponent,
-    DashboardComponent
+    DashboardComponent,
+    DatatableComponent
   ],
   imports: [
     BrowserModule,

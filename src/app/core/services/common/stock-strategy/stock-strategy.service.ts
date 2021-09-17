@@ -10,18 +10,58 @@ export class StockStrategyService {
 
   constructor(private http: HttpClient) { }
 
-  searchStock(text): Observable<any> {
-    const url = 'https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/ajaxCompanySearch.jsp?search='+text;
-    const headers = new HttpHeaders({
-      'X-Requested-With': 'XMLHttpRequest',
-      'Referer': 'https://www.nseindia.com/ChartApp/install/charts/mainpage.jsp',
-      Host: 'www.nseindia.com'
-    });
+  bullCallSpread = () => {
 
-    const options = { headers: headers };
-    return this.http.get(url, options)
-      .pipe(map((data) => data),
-        catchError((err) => this.handleError(err, 'not found')));
+  }
+
+  bullPutSpread = () => {
+    
+  }
+
+  bearCallSpread = () => {
+
+  }
+
+  bearPutSpread = () => {
+    
+  }
+
+  longStraddle = () => {
+    
+  }
+
+  shortStraddle = () => {
+    
+  }
+
+  longShortStraddle = () => {
+    
+  }
+
+
+  callRatioBackSpread = () => {
+    
+  }
+
+  putRatioBackSpread = () => {
+    
+  }
+
+  maxPainPcrRatioBackSpread = () => {
+    
+  }
+
+
+  bearCallLadder = () => {
+    
+  }
+
+  syntheticLongAndArbitrage = () => {
+    
+  }
+
+  ironCondor = () => {
+    
   }
 
   private handleError(error: any, message: any): any {

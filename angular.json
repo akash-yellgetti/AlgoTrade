@@ -25,14 +25,14 @@
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
-              "./node_modules/datatables.net-dt/css/jquery.dataTables.css",
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "./src/assets/datatable/css/dataTables.bootstrap.min.css",
               "./src/styles.css"
             ],
             "scripts": [
-              "./node_modules/jquery/dist/jquery.js",
-              "./node_modules/datatables.net/js/jquery.dataTables.js",
-              "./node_modules/bootstrap/dist/js/bootstrap.js"
+              "./src/assets/js/jquery.min.js",
+              "./src/assets/js/bootstrap.min.js",
+              "./src/assets/datatable/js/jquery.dataTables.min.js",
+              "./src/assets/datatable/js/dataTables.bootstrap.min.js"
             ]
           },
           "configurations": {

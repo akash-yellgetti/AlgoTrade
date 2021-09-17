@@ -1,92 +1,101 @@
 <div class="grid-container">
   <h1 class="mat-h1">Dashboard</h1>
   <mat-grid-list cols="1" rowHeight="100px">
-  <mat-card class="dashboard-card">
-    <mat-card-content class="dashboard-card-content">
-      <app-input-auto-complete></app-input-auto-complete>
-    </mat-card-content>
-  </mat-card>
-</mat-grid-list>
-<mat-grid-list cols="2" rowHeight="350px">
-  <mat-grid-tile>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-title>
-        Intraday
-        <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" xPosition="before">
-          <button mat-menu-item>Expand</button>
-          <button mat-menu-item>Remove</button>
-        </mat-menu>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="dashboard-card-content">
-      <table class="table table-striped table-bordered table-sm row-border hover" datatable [dtOptions]="dashboard.intradayDatatableSetting"></table>
-    </mat-card-content>
-  </mat-card>
-</mat-grid-tile>
-<mat-grid-tile>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-title>
-        Chart
-        <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" xPosition="before">
-          <button mat-menu-item>Expand</button>
-          <button mat-menu-item>Remove</button>
-        </mat-menu>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="dashboard-card-content">
-      
-    </mat-card-content>
-  </mat-card>
-</mat-grid-tile>
-</mat-grid-list>
-<mat-grid-list cols="2" rowHeight="350px">
-  <mat-grid-tile>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-title>
-        Call
-        <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" xPosition="before">
-          <button mat-menu-item>Expand</button>
-          <button mat-menu-item>Remove</button>
-        </mat-menu>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="dashboard-card-content">
-      <table class="table table-striped table-bordered table-sm row-border hover" datatable [dtOptions]="dashboard.callDatatableSetting"></table>
-    </mat-card-content>
-  </mat-card>
-</mat-grid-tile>
-<mat-grid-tile>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-title>
-        Put
-        <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu" xPosition="before">
-          <button mat-menu-item>Expand</button>
-          <button mat-menu-item>Remove</button>
-        </mat-menu>
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="dashboard-card-content">
-      <table class="table table-striped table-bordered table-sm row-border hover" datatable [dtOptions]="dashboard.callDatatableSetting"></table>
-    </mat-card-content>
-  </mat-card>
-</mat-grid-tile>
-</mat-grid-list>
+    <mat-card class="dashboard-card">
+      <mat-card-content class="dashboard-card-content">
+        <app-input-auto-complete></app-input-auto-complete>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-list>
+  <mat-grid-list cols="2" rowHeight="700px">
+    <mat-grid-tile>
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Intraday
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <app-datatable 
+            [options]="dashboard.intradayDatatableSetting.options" 
+            (instance)="intradayDatatableEvt($event)">
+          </app-datatable>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Chart
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list cols="2" rowHeight="350px" *ngIf="false">
+    <mat-grid-tile>
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Call
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <app-datatable 
+            [options]="dashboard.callDatatableSetting.options" 
+            (instance)="callDatatableEvt($event)">
+          </app-datatable>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Put
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu>
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <app-datatable 
+            [options]="dashboard.putDatatableSetting.options" 
+            (instance)="putDatatableEvt($event)">
+          </app-datatable>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
   <mat-grid-list cols="2" rowHeight="350px">
     <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card class="dashboard-card">
