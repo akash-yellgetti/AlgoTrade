@@ -29,12 +29,12 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ng g s core/services/api/money-control/money-control
 ng g s core/services/common/subject/subject
+ng g s core/services/common/market/market-strategy
 
 
 ng g c shared/common/input-auto-complete
 ng g c shared/common/dynamic-table
 ng g c shared/common/datatable
-goToLocation
 
 ng g m modules/material --module=app
 
