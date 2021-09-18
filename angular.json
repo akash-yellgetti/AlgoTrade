@@ -26,13 +26,17 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "./src/assets/datatable/css/dataTables.bootstrap.min.css",
+              "./src/assets/datatable/css/rowReorder.dataTables.min.css",
+              "./src/assets/datatable/css/responsive.dataTables.min.css",
               "./src/styles.css"
             ],
             "scripts": [
               "./src/assets/js/jquery.min.js",
               "./src/assets/js/bootstrap.min.js",
               "./src/assets/datatable/js/jquery.dataTables.min.js",
-              "./src/assets/datatable/js/dataTables.bootstrap.min.js"
+              "./src/assets/datatable/js/dataTables.bootstrap.min.js",
+              "./src/assets/datatable/js/dataTables.rowReorder.min.js",
+              "./src/assets/datatable/js/dataTables.responsive.min.js"
             ]
           },
           "configurations": {

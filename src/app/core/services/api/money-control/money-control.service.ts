@@ -55,16 +55,25 @@ export class MoneyControlService {
         catchError((err) => this.handleError(err, 'Failed to fetch information.')));
   }
 
-  
+  symbolOptionExpiry(symbol: string): string{
+    const url = "https://www.moneycontrol.com/stocks/fno/query_tool/get_expdate.php?symbol="+symbol+"&inst_type=OPTSTK";
+    return url;
+  }
+
+  symbolOptionStrickPrice(sc_id: string, exp_date: string, option_type: string): string{
+    const url = "https://www.moneycontrol.com/stocks/company_info/get_strikeprices.php?sc_id="+sc_id+"&exp_date="+exp_date+"&instrument=OPTSTK&option_type="+option_type;
+    return url;
+  }
+
   optionUrl(symbol: string, duration: number = 15, from: number = new Date(Date.now() - 864e5).getTime(), to: number = new Date().getTime()): string{
-    from=1597774990;
+    from=1631763900;
     to=1631903050;
     const url = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=NIFTY&ExpiryDate=2021-09-16";
     return url;
   }
 
   intradayUrl(symbol: string, duration: number = 15, from: number = new Date(Date.now() - 864e5).getTime(), to: number = new Date().getTime()): string{
-    from=1630510907;
+    from=1631763900;
     to=1631906659;
     const url = "https://priceapi.moneycontrol.com/techCharts/techChartController/history?symbol="+symbol+"&resolution="+duration+"&from="+from+"&to="+to;
     return url;

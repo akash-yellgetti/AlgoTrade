@@ -5,7 +5,9 @@ import { dashboard } from 'src/app/core/json/dashboard';
 import { SubjectService } from 'src/app/core/services/common/subject/subject.service';
 import { MoneyControlService } from 'src/app/core/services/api/money-control/money-control.service';
 import * as _ from 'lodash';
-import Chart from 'chart.js';
+// Chart.register(...registerables);
+import Chart from 'chart.js/auto';
+import { lowerFirst } from 'lodash';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,17 +36,65 @@ export class DashboardComponent {
     })
   );
   public dashboard = dashboard;
+  public chart: any;
   constructor(private breakpointObserver: BreakpointObserver,private subjectService: SubjectService, private moneyControlService: MoneyControlService) {}
   ngOnInit() {
     this.subjectService.getSelectedShare().subscribe((share) => {
       this.getInfo(share)
     });
+
+    
+var ctx: any = document.getElementById('myChart');
+
+
+const config: any = {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+        label: 'Market',
+        data: [],
+        borderWidth: 10
+    }]
+},
+  options: {
+    responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    stacked: false,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Chart.js Line Chart - Multi Axis'
+      }
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+      },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+
+        // grid line settings
+        grid: {
+          drawOnChartArea: false, // only want the grid lines for one axis to show up
+        },
+      },
+    }
+  },
+};
+
+this.chart = new Chart(ctx, config);
   }
 
   getInfo = (share: any) => {
-    const intradayTable: any = this.dashboard.intradayDatatableSetting.table;
-    const callTable: any = this.dashboard.callDatatableSetting.table;
-    const putTable: any = this.dashboard.putDatatableSetting.table;
+    
     // console.log(this.dashboard.intradayDatatableSetting);
     
     const str = _.get(share, 'pdt_dis_nm');
@@ -54,18 +104,42 @@ export class DashboardComponent {
     this.moneyControlService.info(sc_id).subscribe((res) => {
       const detail = res.data;
       console.log(detail);
-      const symbol = _.get(detail, 'NSEID');
+      const symbol = _.get(detail, 'company');
       console.log(symbol);
-      this.moneyControlService.getSymbolInfo(symbol).subscribe((data) => {
+      this.moneyControlService.getSymbolInfo(_.toUpper(symbol)).subscribe((data) => {
         const ticker = _.get(data, 'ticker');
-        const intradayUrl: string = this.moneyControlService.intradayUrl(ticker);
-        intradayTable.ajax.url(intradayUrl).load();
-        // const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-30";
-        // callTable.ajax.url(callOptionUrl).load();
-      //   // const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id="+symbol+"&ExpiryDate=2021-09-16";
-      //   // putTable.ajax.url(putOptionUrl).load();
+        console.log('ticker', ticker);
+        
+        
       })
     })
+  }
+
+  changeIndex = (ticker) => {
+    const intradayTable: any = this.dashboard.intradayDatatableSetting.table;
+    const callTable: any = this.dashboard.callDatatableSetting.table;
+    const putTable: any = this.dashboard.putDatatableSetting.table;
+    const intradayUrl: string = this.moneyControlService.intradayUrl(ticker);
+    intradayTable.ajax.url(intradayUrl).load().data();
+    // const tableData = intradayTable;
+    // const chartData = _.chain(tableData).mapValues('close').values().value();
+    // console.log(chartData.length);
+    
+    // const chartLabels = _.chain(tableData).mapValues('time').values().value();
+    // console.log(chartLabels.length);
+
+    // this.chart.data.labels = chartLabels;
+    // this.chart.data.datasets.forEach((dataset) => {
+    //   dataset.data = chartData;
+    // });
+    this.chart.update();
+    const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-23";
+    console.log(callOptionUrl);
+    
+    callTable.ajax.url(callOptionUrl).load();
+    const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id="+ticker+"&ExpiryDate=2021-09-23";
+    console.log(putOptionUrl);
+    putTable.ajax.url(putOptionUrl).load();
   }
 
   intradayDatatableEvt = ($event) => {

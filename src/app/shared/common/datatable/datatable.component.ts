@@ -13,7 +13,7 @@ export class DatatableComponent implements OnInit {
   @Input() id: any;
   @Input() refresh: any;
   constructor() {
-    this.id = new Date().getTime();
+    this.id = this.id || new Date().getTime();
   }
 
   ngOnInit(): void {
