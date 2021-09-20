@@ -795,6 +795,65 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "LvDl");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 
+const optionCondiiton = [
+    {
+        name: "Call Writing",
+        price: "negative",
+        types: ["CE"],
+        changeinOpenInterest: "positive",
+    },
+    {
+        name: "Put Writing",
+        price: "negative",
+        types: ["PE"],
+        changeinOpenInterest: "positive",
+    },
+    {
+        name: "Call Unwinding",
+        price: "positive",
+        types: ["CE"],
+        changeinOpenInterest: "negative",
+    },
+    {
+        name: "Put Unwinding",
+        price: "positive",
+        types: ["PE"],
+        changeinOpenInterest: "negative",
+    },
+    {
+        name: "Long Build Up",
+        price: "positive",
+        types: ["PE", "CE"],
+        changeinOpenInterest: "positive",
+    },
+    {
+        name: "Short Build Up",
+        price: "negative",
+        types: ["PE", "CE"],
+        changeinOpenInterest: "positive",
+    },
+    {
+        name: "Long Unwinding",
+        price: "negative",
+        types: ["PE", "CE"],
+        changeinOpenInterest: "negative",
+    },
+    {
+        name: "Short Covering",
+        price: "positive",
+        types: ["PE", "CE"],
+        changeinOpenInterest: "negative",
+    },
+];
+const getPositionName = (option, type) => {
+    const o = lodash__WEBPACK_IMPORTED_MODULE_0__["get"](option, type);
+    const price = Math.sign(o.change) === -1 ? 'negative' : 'positive';
+    const changeinOpenInterest = Math.sign(o.changeinOpenInterest) === -1 ? 'negative' : 'positive';
+    const conditions = lodash__WEBPACK_IMPORTED_MODULE_0__["filter"](optionCondiiton, (res) => {
+        return lodash__WEBPACK_IMPORTED_MODULE_0__["indexOf"](res.types, type) > -1;
+    });
+    return lodash__WEBPACK_IMPORTED_MODULE_0__["find"](conditions, { price, changeinOpenInterest });
+};
 function timeConverter(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000);
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -925,6 +984,148 @@ const dashboard = {
                 // { "data": "last_traded_date", "title": "last_traded_date" },
                 { "data": "volume", "title": "volume" }
             ]
+        }
+    },
+    nseOptionChainDatatable: {
+        id: "nseOptionChainDatatable",
+        table: {},
+        options: {
+            responsive: true,
+            order: [[8, "asc"]],
+            ajax: {
+                url: "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY",
+                method: "GET",
+                cache: true,
+                timeout: 0,
+                headers: {},
+                dataSrc: function (json) {
+                    console.log(json);
+                    const data = lodash__WEBPACK_IMPORTED_MODULE_0__["get"](json, 'filtered.data');
+                    const price = lodash__WEBPACK_IMPORTED_MODULE_0__["get"](json, 'records.underlyingValue');
+                    const selectedStrikeprice = Math.round(Math.round(price) / 100) * 100;
+                    console.log(selectedStrikeprice);
+                    for (const i in data) {
+                        const option = data[i];
+                        const optionPrice = price > option.strikePrice ? parseFloat((price - option.strikePrice).toFixed(2)) : parseFloat((option.strikePrice - price).toFixed(2));
+                        // console.log(optionPrice);
+                        const ceOptionLastPrice = lodash__WEBPACK_IMPORTED_MODULE_0__["get"](option, 'CE.lastPrice');
+                        const ceOptionPremium = option.strikePrice >= price ? 0 : parseFloat((ceOptionLastPrice - optionPrice).toFixed(2));
+                        // const ceOptionPremium = 0;
+                        const peOptionLastPrice = lodash__WEBPACK_IMPORTED_MODULE_0__["get"](option, 'PE.lastPrice');
+                        const peOptionPremium = option.strikePrice <= price ? 0 : parseFloat((peOptionLastPrice - optionPrice).toFixed(2));
+                        // const peOptionPremium = 0;
+                        // console.log(ceOptionPremium);
+                        // const ceOptionPremium = optionPrice-_.get(option,'CE.lastPrice');
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'CE.change', lodash__WEBPACK_IMPORTED_MODULE_0__["get"](option, 'CE.change').toFixed(2));
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'PE.change', lodash__WEBPACK_IMPORTED_MODULE_0__["get"](option, 'PE.change').toFixed(2));
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'optionPrice', optionPrice);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'price', price);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'selectedStrikeprice', selectedStrikeprice);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'ceOptionAction', getPositionName(option, 'CE'));
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'ceLastPrice', ceOptionLastPrice);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'ceOptionPremium', ceOptionPremium);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'peLastPrice', peOptionLastPrice);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'peOptionPremium', peOptionPremium);
+                        lodash__WEBPACK_IMPORTED_MODULE_0__["set"](data[i], 'peOptionAction', getPositionName(option, 'PE'));
+                        // console.log(_.pick(data[i], ['strikePrice', 'optionPrice', 'ceOptionLastPrice']));
+                    }
+                    const filterData = lodash__WEBPACK_IMPORTED_MODULE_0__["chain"](data).orderBy(['strikePrice'], ['asc']).drop(52).take(31).value();
+                    // for ( var i=0, ien=json.data.length ; i<ien ; i++ ) {
+                    //   json.data[i][0] = '<a href="/message/'+json.data[i][0]+'>View message</a>';
+                    // }
+                    return filterData;
+                }
+            },
+            pageLength: 50,
+            processing: true,
+            "columns": [
+                // {
+                //   "data": "expiryDate",
+                //   "title": "expiryDate"
+                // },
+                {
+                    "data": "price",
+                    "title": "price",
+                    "width": "5%"
+                },
+                {
+                    "data": "optionPrice",
+                    "title": "optionPrice"
+                },
+                {
+                    "data": "ceOptionAction.name",
+                    "title": "ceOptionAction"
+                },
+                {
+                    "data": "CE.changeinOpenInterest",
+                    "title": "C-OI",
+                    "width": "5%"
+                },
+                {
+                    "data": "CE.openInterest",
+                    "title": "OI",
+                    "width": "5%"
+                },
+                {
+                    "data": "CE.change",
+                    "title": "C-price",
+                    "width": "5%"
+                },
+                {
+                    "data": "ceLastPrice",
+                    "title": "ceLastPrice",
+                    "width": "5%"
+                },
+                {
+                    "data": "ceOptionPremium",
+                    "title": "ceOptionPremium"
+                },
+                {
+                    "data": "strikePrice",
+                    "title": "strikePrice",
+                    "width": "5%"
+                },
+                {
+                    "data": "peLastPrice",
+                    "title": "peLastPrice",
+                    "width": "5%"
+                },
+                {
+                    "data": "peOptionPremium",
+                    "title": "peOptionPremium"
+                },
+                {
+                    "data": "peOptionAction.name",
+                    "title": "peOptionAction",
+                },
+                {
+                    "data": "PE.change",
+                    "title": "C-price",
+                    "width": "5%"
+                },
+                {
+                    "data": "PE.changeinOpenInterest",
+                    "title": "C-OI",
+                    "width": "5%"
+                },
+                {
+                    "data": "PE.openInterest",
+                    "title": "OI",
+                    "width": "5%"
+                }
+            ],
+            "rowCallback": function (row, data, index) {
+                // console.log(data);
+                if (data['peOptionPremium'] !== 0 && data['peOptionPremium'] > -10 && data['peOptionPremium'] < 10 && data['peOptionLastPrice'] < 300) {
+                    $('td', row).css('background-color', 'yellow');
+                }
+                if (data['ceOptionPremium'] !== 0 && data['ceOptionPremium'] > -10 && data['ceOptionPremium'] < 10 && data['ceOptionLastPrice'] < 300) {
+                    $('td', row).css('background-color', 'green');
+                }
+                if (data['strikePrice'] === data['selectedStrikeprice']) {
+                    $('td', row).css('background-color', 'Orange');
+                }
+            }
         }
     }
 };
@@ -1101,8 +1302,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var chart_js_auto__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! chart.js/auto */ "1UnT");
 /* harmony import */ var src_app_core_services_common_subject_subject_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/core/services/common/subject/subject.service */ "Gtog");
-/* harmony import */ var src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! src/app/core/services/api/money-control/money-control.service */ "2yFA");
-/* harmony import */ var _common_datatable_datatable_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../common/datatable/datatable.component */ "rF8g");
+/* harmony import */ var src_app_core_services_common_stock_strategy_stock_strategy_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! src/app/core/services/common/stock-strategy/stock-strategy.service */ "nwq1");
+/* harmony import */ var src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! src/app/core/services/api/money-control/money-control.service */ "2yFA");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var _common_datatable_datatable_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../common/datatable/datatable.component */ "rF8g");
 
 
 
@@ -1115,10 +1318,32 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+function DashboardComponent_div_12_Template(rf, ctx) { if (rf & 1) {
+    const _r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Intraday");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "app-datatable", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("instance", function DashboardComponent_div_12_Template_app_datatable_instance_5_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r2); const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r1.intradayDatatableEvt($event); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx_r0.dashboard.intradayDatatableSetting.id)("options", ctx_r0.dashboard.intradayDatatableSetting.options);
+} }
 class DashboardComponent {
-    constructor(breakpointObserver, subjectService, moneyControlService) {
+    constructor(breakpointObserver, subjectService, stockStrategy, moneyControlService) {
         this.breakpointObserver = breakpointObserver;
         this.subjectService = subjectService;
+        this.stockStrategy = stockStrategy;
         this.moneyControlService = moneyControlService;
         /** Based on the screen size, switch from standard to one column per row */
         this.cards = this.breakpointObserver.observe(_angular_cdk_layout__WEBPACK_IMPORTED_MODULE_2__["Breakpoints"].Handset).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(({ matches }) => {
@@ -1159,24 +1384,33 @@ class DashboardComponent {
             const intradayTable = this.dashboard.intradayDatatableSetting.table;
             const callTable = this.dashboard.callDatatableSetting.table;
             const putTable = this.dashboard.putDatatableSetting.table;
-            const intradayUrl = this.moneyControlService.intradayUrl(ticker);
-            intradayTable.ajax.url(intradayUrl).load().data();
+            const nseOptionChainDatatable = this.dashboard.nseOptionChainDatatable.table;
+            const nseUrl = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY';
+            nseOptionChainDatatable.ajax.url(nseUrl).load();
+            const data = nseOptionChainDatatable.data();
+            // const data = bearPutSpreadData;
+            // console.log( data);
+            const sellPE = lodash__WEBPACK_IMPORTED_MODULE_4__["find"](data, { strikePrice: 17300 });
+            const buyPE = lodash__WEBPACK_IMPORTED_MODULE_4__["find"](data, { strikePrice: 17350 });
+            const bullCallSpread = this.stockStrategy.bearPutSpread(data, buyPE, sellPE);
+            console.log(bullCallSpread);
+            // intradayTable.ajax.url(intradayUrl).load().data();
             // const tableData = intradayTable;
-            // const chartData = _.chain(tableData).mapValues('close').values().value();
-            // console.log(chartData.length);
-            // const chartLabels = _.chain(tableData).mapValues('time').values().value();
-            // console.log(chartLabels.length);
-            // this.chart.data.labels = chartLabels;
-            // this.chart.data.datasets.forEach((dataset) => {
-            //   dataset.data = chartData;
-            // });
+            const chartData = lodash__WEBPACK_IMPORTED_MODULE_4__["chain"](bullCallSpread).mapValues('net').values().value();
+            // // console.log(chartData.length);
+            const chartLabels = lodash__WEBPACK_IMPORTED_MODULE_4__["chain"](bullCallSpread).mapValues('strikePrice').values().value();
+            // // console.log(chartLabels.length);
+            this.chart.data.labels = chartLabels;
+            this.chart.data.datasets.forEach((dataset) => {
+                dataset.data = chartData;
+            });
             this.chart.update();
-            const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=" + ticker + "&ExpiryDate=2021-09-23";
-            console.log(callOptionUrl);
-            callTable.ajax.url(callOptionUrl).load();
-            const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id=" + ticker + "&ExpiryDate=2021-09-23";
-            console.log(putOptionUrl);
-            putTable.ajax.url(putOptionUrl).load();
+            // const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-23";
+            // console.log(callOptionUrl);
+            // callTable.ajax.url(callOptionUrl).load();
+            // const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id="+ticker+"&ExpiryDate=2021-09-23";
+            // console.log(putOptionUrl);
+            // putTable.ajax.url(putOptionUrl).load();
         };
         this.intradayDatatableEvt = ($event) => {
             this.dashboard.intradayDatatableSetting.table = $event;
@@ -1187,12 +1421,15 @@ class DashboardComponent {
         this.putDatatableEvt = ($event) => {
             this.dashboard.putDatatableSetting.table = $event;
         };
+        this.nseOptionChainDatatableEvt = ($event) => {
+            this.dashboard.nseOptionChainDatatable.table = $event;
+        };
     }
     ngOnInit() {
         this.subjectService.getSelectedShare().subscribe((share) => {
             this.getInfo(share);
         });
-        var ctx = document.getElementById('myChart');
+        var bearPutSpreadDatacCtx = document.getElementById('bearPutSpread');
         const config = {
             type: 'line',
             data: {
@@ -1213,7 +1450,7 @@ class DashboardComponent {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Chart.js Line Chart - Multi Axis'
+                        text: 'BearPutSpread'
                     }
                 },
                 scales: {
@@ -1234,11 +1471,11 @@ class DashboardComponent {
                 }
             },
         };
-        this.chart = new chart_js_auto__WEBPACK_IMPORTED_MODULE_5__["default"](ctx, config);
+        this.chart = new chart_js_auto__WEBPACK_IMPORTED_MODULE_5__["default"](bearPutSpreadDatacCtx, config);
     }
 }
-DashboardComponent.ɵfac = function DashboardComponent_Factory(t) { return new (t || DashboardComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_layout__WEBPACK_IMPORTED_MODULE_2__["BreakpointObserver"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_services_common_subject_subject_service__WEBPACK_IMPORTED_MODULE_6__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_7__["MoneyControlService"])); };
-DashboardComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: DashboardComponent, selectors: [["app-dashboard"]], decls: 36, vars: 6, consts: [[1, "grid-container"], [1, "row"], [1, "col-sm-12"], [1, "panel", "panel-default"], [1, "panel-heading"], [1, "panel-body"], [1, "btn-group"], ["type", "button", 1, "btn", "btn-default", 3, "click"], [1, "col-sm-6"], [3, "id", "options", "instance"], ["id", "myChart", "width", "400", "height", "280"]], template: function DashboardComponent_Template(rf, ctx) { if (rf & 1) {
+DashboardComponent.ɵfac = function DashboardComponent_Factory(t) { return new (t || DashboardComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_layout__WEBPACK_IMPORTED_MODULE_2__["BreakpointObserver"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_services_common_subject_subject_service__WEBPACK_IMPORTED_MODULE_6__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_services_common_stock_strategy_stock_strategy_service__WEBPACK_IMPORTED_MODULE_7__["StockStrategyService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_8__["MoneyControlService"])); };
+DashboardComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: DashboardComponent, selectors: [["app-dashboard"]], decls: 25, vars: 3, consts: [[1, "grid-container"], [1, "row"], [1, "col-sm-12"], [1, "panel", "panel-default"], [1, "panel-heading"], [1, "panel-body"], [1, "btn-group"], ["type", "button", 1, "btn", "btn-default", 3, "click"], ["class", "col-sm-6", 4, "ngIf"], [1, "col-sm-6"], ["id", "bearPutSpread", "width", "400", "height", "280"], [3, "id", "options", "instance"]], template: function DashboardComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
@@ -1249,59 +1486,36 @@ DashboardComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 5);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 6);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "button", 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function DashboardComponent_Template_button_click_8_listener() { return ctx.changeIndex(9); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function DashboardComponent_Template_button_click_8_listener() { return ctx.changeIndex("NIFTY"); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "Nifty");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "button", 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function DashboardComponent_Template_button_click_10_listener() { return ctx.changeIndex(23); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function DashboardComponent_Template_button_click_10_listener() { return ctx.changeIndex("BANKNIFTY"); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "BankNifty");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "div", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15, "Intraday");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](12, DashboardComponent_div_12_Template, 6, 2, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Chart");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "app-datatable", 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("instance", function DashboardComponent_Template_app_datatable_instance_17_listener($event) { return ctx.intradayDatatableEvt($event); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "div", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21, "Chart");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](23, "canvas", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "canvas", 10);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "div", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](27, "Call Option");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](22, "Put Option");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "app-datatable", 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("instance", function DashboardComponent_Template_app_datatable_instance_29_listener($event) { return ctx.callDatatableEvt($event); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "div", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](32, "div", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](33, "Put Option");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "app-datatable", 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("instance", function DashboardComponent_Template_app_datatable_instance_35_listener($event) { return ctx.putDatatableEvt($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "app-datatable", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("instance", function DashboardComponent_Template_app_datatable_instance_24_listener($event) { return ctx.nseOptionChainDatatableEvt($event); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
@@ -1309,13 +1523,11 @@ DashboardComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](17);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx.dashboard.intradayDatatableSetting.id)("options", ctx.dashboard.intradayDatatableSetting.options);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](12);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx.dashboard.callDatatableSetting.id)("options", ctx.dashboard.callDatatableSetting.options);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx.dashboard.putDatatableSetting.id)("options", ctx.dashboard.putDatatableSetting.options);
-    } }, directives: [_common_datatable_datatable_component__WEBPACK_IMPORTED_MODULE_8__["DatatableComponent"]], styles: [".grid-container[_ngcontent-%COMP%] {\n  margin: 20px;\n}\n\n.dashboard-card[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 15px;\n  left: 15px;\n  right: 15px;\n  bottom: 15px;\n}\n\n.more-button[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n\n.dashboard-card-content[_ngcontent-%COMP%] {\n  text-align: center;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc2hhcmVkL2xheW91dC9kYXNoYm9hcmQvZGFzaGJvYXJkLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxZQUFZO0FBQ2Q7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsU0FBUztFQUNULFVBQVU7RUFDVixXQUFXO0VBQ1gsWUFBWTtBQUNkOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFFBQVE7RUFDUixXQUFXO0FBQ2I7O0FBRUE7RUFDRSxrQkFBa0I7QUFDcEIiLCJmaWxlIjoic3JjL2FwcC9zaGFyZWQvbGF5b3V0L2Rhc2hib2FyZC9kYXNoYm9hcmQuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5ncmlkLWNvbnRhaW5lciB7XG4gIG1hcmdpbjogMjBweDtcbn1cblxuLmRhc2hib2FyZC1jYXJkIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB0b3A6IDE1cHg7XG4gIGxlZnQ6IDE1cHg7XG4gIHJpZ2h0OiAxNXB4O1xuICBib3R0b206IDE1cHg7XG59XG5cbi5tb3JlLWJ1dHRvbiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiA1cHg7XG4gIHJpZ2h0OiAxMHB4O1xufVxuXG4uZGFzaGJvYXJkLWNhcmQtY29udGVudCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cbiJdfQ== */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", false);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx.dashboard.nseOptionChainDatatable.id)("options", ctx.dashboard.nseOptionChainDatatable.options);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_9__["NgIf"], _common_datatable_datatable_component__WEBPACK_IMPORTED_MODULE_10__["DatatableComponent"]], styles: [".grid-container[_ngcontent-%COMP%] {\n  margin: 20px;\n}\n\n.dashboard-card[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 15px;\n  left: 15px;\n  right: 15px;\n  bottom: 15px;\n}\n\n.more-button[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n}\n\n.dashboard-card-content[_ngcontent-%COMP%] {\n  text-align: center;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc2hhcmVkL2xheW91dC9kYXNoYm9hcmQvZGFzaGJvYXJkLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxZQUFZO0FBQ2Q7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsU0FBUztFQUNULFVBQVU7RUFDVixXQUFXO0VBQ1gsWUFBWTtBQUNkOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLFFBQVE7RUFDUixXQUFXO0FBQ2I7O0FBRUE7RUFDRSxrQkFBa0I7QUFDcEIiLCJmaWxlIjoic3JjL2FwcC9zaGFyZWQvbGF5b3V0L2Rhc2hib2FyZC9kYXNoYm9hcmQuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5ncmlkLWNvbnRhaW5lciB7XG4gIG1hcmdpbjogMjBweDtcbn1cblxuLmRhc2hib2FyZC1jYXJkIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB0b3A6IDE1cHg7XG4gIGxlZnQ6IDE1cHg7XG4gIHJpZ2h0OiAxNXB4O1xuICBib3R0b206IDE1cHg7XG59XG5cbi5tb3JlLWJ1dHRvbiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiA1cHg7XG4gIHJpZ2h0OiAxMHB4O1xufVxuXG4uZGFzaGJvYXJkLWNhcmQtY29udGVudCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cbiJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DashboardComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -1323,7 +1535,7 @@ DashboardComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
                 templateUrl: './dashboard.component.html',
                 styleUrls: ['./dashboard.component.css']
             }]
-    }], function () { return [{ type: _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_2__["BreakpointObserver"] }, { type: src_app_core_services_common_subject_subject_service__WEBPACK_IMPORTED_MODULE_6__["SubjectService"] }, { type: src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_7__["MoneyControlService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_2__["BreakpointObserver"] }, { type: src_app_core_services_common_subject_subject_service__WEBPACK_IMPORTED_MODULE_6__["SubjectService"] }, { type: src_app_core_services_common_stock_strategy_stock_strategy_service__WEBPACK_IMPORTED_MODULE_7__["StockStrategyService"] }, { type: src_app_core_services_api_money_control_money_control_service__WEBPACK_IMPORTED_MODULE_8__["MoneyControlService"] }]; }, null); })();
 
 
 /***/ }),
@@ -1490,6 +1702,99 @@ NavigationComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
                 styleUrls: ['./navigation.component.css']
             }]
     }], function () { return [{ type: _angular_cdk_layout__WEBPACK_IMPORTED_MODULE_1__["BreakpointObserver"] }]; }, null); })();
+
+
+/***/ }),
+
+/***/ "nwq1":
+/*!*******************************************************************************!*\
+  !*** ./src/app/core/services/common/stock-strategy/stock-strategy.service.ts ***!
+  \*******************************************************************************/
+/*! exports provided: StockStrategyService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StockStrategyService", function() { return StockStrategyService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ "LvDl");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+
+
+
+
+
+class StockStrategyService {
+    constructor(http) {
+        this.http = http;
+        this.bullCallSpread = (buyCE, sellCE) => {
+        };
+        this.bullPutSpread = () => {
+        };
+        this.bearCallSpread = () => {
+        };
+        this.bearPutSpread = (strikeData, buyPE, sellPE) => {
+            const data = lodash__WEBPACK_IMPORTED_MODULE_2___default.a.reduce(strikeData, (arr, res, i) => {
+                const option = strikeData[i];
+                const strikePrice = option.strikePrice;
+                console.log(buyPE.strikePrice - strikePrice);
+                const d = {
+                    strikePrice,
+                    buyPEProfit: lodash__WEBPACK_IMPORTED_MODULE_2___default.a.max([(buyPE.strikePrice - strikePrice), 0]) - buyPE.PE.lastPrice,
+                    sellPEProfit: lodash__WEBPACK_IMPORTED_MODULE_2___default.a.min([(strikePrice - sellPE.strikePrice), 0]) + sellPE.PE.lastPrice,
+                    net: 0
+                };
+                d.net = d.buyPEProfit + d.sellPEProfit;
+                arr.push(d);
+                return arr;
+            }, []);
+            return data;
+        };
+        this.longStraddle = () => {
+        };
+        this.shortStraddle = () => {
+        };
+        this.longShortStraddle = () => {
+        };
+        this.callRatioBackSpread = () => {
+        };
+        this.putRatioBackSpread = () => {
+        };
+        this.maxPainPcrRatioBackSpread = () => {
+        };
+        this.bearCallLadder = () => {
+        };
+        this.syntheticLongAndArbitrage = () => {
+        };
+        this.ironCondor = () => {
+        };
+    }
+    handleError(error, message) {
+        // this.showLoader = false;
+        // this.toastr.error(message);
+        switch (error.code) {
+            case 400:
+            case 409:
+                for (const err of error.error) {
+                    // this.toastr.error(err.message);
+                }
+                break;
+            default:
+            // this.toastr.error(message);
+        }
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["throwError"])(error.error || 'Server error');
+    }
+}
+StockStrategyService.ɵfac = function StockStrategyService_Factory(t) { return new (t || StockStrategyService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"])); };
+StockStrategyService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: StockStrategyService, factory: StockStrategyService.ɵfac, providedIn: 'root' });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](StockStrategyService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: 'root'
+            }]
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }]; }, null); })();
 
 
 /***/ }),

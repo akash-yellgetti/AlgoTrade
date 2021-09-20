@@ -8,7 +8,8 @@ import * as _ from 'lodash';
 // Chart.register(...registerables);
 import Chart from 'chart.js/auto';
 import { lowerFirst } from 'lodash';
-
+import { StockStrategyService } from 'src/app/core/services/common/stock-strategy/stock-strategy.service';
+import { bearPutSpreadData } from 'src/app/core/json/bearPutSpread';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -37,14 +38,17 @@ export class DashboardComponent {
   );
   public dashboard = dashboard;
   public chart: any;
-  constructor(private breakpointObserver: BreakpointObserver,private subjectService: SubjectService, private moneyControlService: MoneyControlService) {}
+  constructor(private breakpointObserver: BreakpointObserver,
+    private subjectService: SubjectService, 
+    private stockStrategy: StockStrategyService, 
+    private moneyControlService: MoneyControlService) {}
   ngOnInit() {
     this.subjectService.getSelectedShare().subscribe((share) => {
       this.getInfo(share)
     });
 
     
-var ctx: any = document.getElementById('myChart');
+var bearPutSpreadDatacCtx: any = document.getElementById('bearPutSpread');
 
 
 const config: any = {
@@ -67,7 +71,7 @@ const config: any = {
     plugins: {
       title: {
         display: true,
-        text: 'Chart.js Line Chart - Multi Axis'
+        text: 'BearPutSpread'
       }
     },
     scales: {
@@ -90,7 +94,7 @@ const config: any = {
   },
 };
 
-this.chart = new Chart(ctx, config);
+this.chart = new Chart(bearPutSpreadDatacCtx, config);
   }
 
   getInfo = (share: any) => {
@@ -119,27 +123,40 @@ this.chart = new Chart(ctx, config);
     const intradayTable: any = this.dashboard.intradayDatatableSetting.table;
     const callTable: any = this.dashboard.callDatatableSetting.table;
     const putTable: any = this.dashboard.putDatatableSetting.table;
-    const intradayUrl: string = this.moneyControlService.intradayUrl(ticker);
-    intradayTable.ajax.url(intradayUrl).load().data();
-    // const tableData = intradayTable;
-    // const chartData = _.chain(tableData).mapValues('close').values().value();
-    // console.log(chartData.length);
+    const nseOptionChainDatatable: any = this.dashboard.nseOptionChainDatatable.table;
+    const nseUrl: string = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY';
+    nseOptionChainDatatable.ajax.url(nseUrl).load();
+    const data = nseOptionChainDatatable.data();
+    // const data = bearPutSpreadData;
+    // console.log( data);
+    const sellPE = _.find(data, { strikePrice: 17300 });
+    const buyPE = _.find(data, { strikePrice: 17350 });
+    const bullCallSpread = this.stockStrategy.bearPutSpread(data, buyPE, sellPE);
+    console.log(bullCallSpread);
     
-    // const chartLabels = _.chain(tableData).mapValues('time').values().value();
-    // console.log(chartLabels.length);
+    // intradayTable.ajax.url(intradayUrl).load().data();
 
-    // this.chart.data.labels = chartLabels;
-    // this.chart.data.datasets.forEach((dataset) => {
-    //   dataset.data = chartData;
-    // });
-    this.chart.update();
-    const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-23";
-    console.log(callOptionUrl);
+
+
+    // const tableData = intradayTable;
+    const chartData = _.chain(bullCallSpread).mapValues('net').values().value();
+    // // console.log(chartData.length);
     
-    callTable.ajax.url(callOptionUrl).load();
-    const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id="+ticker+"&ExpiryDate=2021-09-23";
-    console.log(putOptionUrl);
-    putTable.ajax.url(putOptionUrl).load();
+    const chartLabels = _.chain(bullCallSpread).mapValues('strikePrice').values().value();
+    // // console.log(chartLabels.length);
+
+    this.chart.data.labels = chartLabels;
+    this.chart.data.datasets.forEach((dataset) => {
+      dataset.data = chartData;
+    });
+    this.chart.update();
+    // const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-23";
+    // console.log(callOptionUrl);
+    
+    // callTable.ajax.url(callOptionUrl).load();
+    // const putOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id="+ticker+"&ExpiryDate=2021-09-23";
+    // console.log(putOptionUrl);
+    // putTable.ajax.url(putOptionUrl).load();
   }
 
   intradayDatatableEvt = ($event) => {
@@ -152,6 +169,9 @@ this.chart = new Chart(ctx, config);
   
   putDatatableEvt = ($event) => {
     this.dashboard.putDatatableSetting.table = $event;
+  }
+  nseOptionChainDatatableEvt = ($event) => {
+    this.dashboard.nseOptionChainDatatable.table = $event;
   }
   
 }
