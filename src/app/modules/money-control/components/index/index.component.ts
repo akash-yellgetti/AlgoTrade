@@ -30,19 +30,19 @@ export class IndexComponent implements OnInit {
     intradayTable.ajax.url(nseUrl).load();
     // OTM Call
     const otmCallDatatable: any = this.dashboard.otmCallDatatable.table;
-    const otmCallDatatableUrl: string = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id='+index.id+'&ExpiryDate='+expiryDate;
+    const otmCallDatatableUrl: string = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/CE/'+index.id+'/'+expiryDate;
     otmCallDatatable.ajax.url(otmCallDatatableUrl).load();
     // OTM Put
     const otmPutDatatable: any = this.dashboard.otmPutDatatable.table;
-    const otmPutDatatableUrl: string = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id='+index.id+'&ExpiryDate='+expiryDate;
+    const otmPutDatatableUrl: string = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/PE/'+index.id+'/'+expiryDate;
     otmPutDatatable.ajax.url(otmPutDatatableUrl).load();
     // OTM Call
     const itmCallDatatable: any = this.dashboard.itmCallDatatable.table;
-    const itmCallDatatableUrl: string = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id='+index.id+'&ExpiryDate='+expiryDate;
+    const itmCallDatatableUrl: string = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/CE/'+index.id+'/'+expiryDate;
     itmCallDatatable.ajax.url(otmCallDatatableUrl).load();
     // OTM Put
     const itmPutDatatable: any = this.dashboard.itmPutDatatable.table;
-    const itmPutDatatableUrl: string = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id='+index.id+'&ExpiryDate='+expiryDate;
+    const itmPutDatatableUrl: string = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/PE/'+index.id+'/'+expiryDate;
     itmPutDatatable.ajax.url(otmPutDatatableUrl).load();
   }
   intradayDatatableEvt = ($event) => {
