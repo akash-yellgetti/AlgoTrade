@@ -11,9 +11,25 @@ export class StockStrategyService {
 
   constructor(private http: HttpClient) { }
 
-  bullCallSpread = (buyCE: any, sellCE: any,) => {
-
-  }
+  bullCallSpread = (strikeData: any[], buyCE: any, sellCE: any) => {
+    const data = _.reduce(strikeData, (arr, res, i) => {
+      const option = strikeData[i];
+      const strikePrice = option.strikePrice;
+      console.log(buyCE.strikePrice-strikePrice);
+       
+      const d = {
+        strikePrice,
+        buyCEProfit: _.max([(strikePrice-buyCE.strikePrice), 0])-buyCE.CE.lastPrice,
+        sellCEProfit: _.min([(sellCE.strikePrice-strikePrice), 0])+sellCE.CE.lastPrice,
+        
+        net: 0
+      }
+      d.net = d.buyCEProfit+d.sellCEProfit;
+      arr.push(d);
+      return arr;
+  }, [])
+  return data;
+}
 
   bullPutSpread = () => {
     

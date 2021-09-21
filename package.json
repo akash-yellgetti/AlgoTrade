@@ -29,6 +29,7 @@
     "datatables.net-dt": "^1.11.2",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "ng-chartjs": "^0.2.3",
     "ng2-charts": "^2.4.3",
     "ngx-bootstrap": "^7.1.0",

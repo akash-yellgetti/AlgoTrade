@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import Chart from 'chart.js/auto';
 import { lowerFirst } from 'lodash';
 import { StockStrategyService } from 'src/app/core/services/common/stock-strategy/stock-strategy.service';
-import { bearPutSpreadData } from 'src/app/core/json/bearPutSpread';
+import { bearPutSpreadData, bullCallSpreadData } from 'src/app/core/json/startegyData';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -126,30 +126,30 @@ this.chart = new Chart(bearPutSpreadDatacCtx, config);
     const nseOptionChainDatatable: any = this.dashboard.nseOptionChainDatatable.table;
     const nseUrl: string = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY';
     nseOptionChainDatatable.ajax.url(nseUrl).load();
-    const data = nseOptionChainDatatable.data();
-    // const data = bearPutSpreadData;
+    // const data = nseOptionChainDatatable.data();
+    // const data = bullCallSpreadData;
     // console.log( data);
-    const sellPE = _.find(data, { strikePrice: 17300 });
-    const buyPE = _.find(data, { strikePrice: 17350 });
-    const bullCallSpread = this.stockStrategy.bearPutSpread(data, buyPE, sellPE);
-    console.log(bullCallSpread);
+    // const sellPE = _.find(data, { strikePrice: 570 });
+    // const buyPE = _.find(data, { strikePrice: 520 });
+    // const bullCallSpread = this.stockStrategy.bullCallSpread(data, buyPE, sellPE);
+    // console.log(bullCallSpread);
     
     // intradayTable.ajax.url(intradayUrl).load().data();
 
 
 
     // const tableData = intradayTable;
-    const chartData = _.chain(bullCallSpread).mapValues('net').values().value();
+    // const chartData = _.chain(bullCallSpread).mapValues('net').values().value();
     // // console.log(chartData.length);
     
-    const chartLabels = _.chain(bullCallSpread).mapValues('strikePrice').values().value();
+    // const chartLabels = _.chain(bullCallSpread).mapValues('strikePrice').values().value();
     // // console.log(chartLabels.length);
 
-    this.chart.data.labels = chartLabels;
-    this.chart.data.datasets.forEach((dataset) => {
-      dataset.data = chartData;
-    });
-    this.chart.update();
+    // this.chart.data.labels = chartLabels;
+    // this.chart.data.datasets.forEach((dataset) => {
+    //   dataset.data = chartData;
+    // });
+    // this.chart.update();
     // const callOptionUrl = "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id="+ticker+"&ExpiryDate=2021-09-23";
     // console.log(callOptionUrl);
     
@@ -163,15 +163,15 @@ this.chart = new Chart(bearPutSpreadDatacCtx, config);
     this.dashboard.intradayDatatableSetting.table = $event;
   }
 
-  callDatatableEvt = ($event) => {
-    this.dashboard.callDatatableSetting.table = $event;
-  }
+  // callDatatableEvt = ($event) => {
+  //   this.dashboard.callDatatableSetting.table = $event;
+  // }
   
-  putDatatableEvt = ($event) => {
-    this.dashboard.putDatatableSetting.table = $event;
-  }
-  nseOptionChainDatatableEvt = ($event) => {
-    this.dashboard.nseOptionChainDatatable.table = $event;
-  }
+  // putDatatableEvt = ($event) => {
+  //   this.dashboard.putDatatableSetting.table = $event;
+  // }
+  // nseOptionChainDatatableEvt = ($event) => {
+  //   this.dashboard.nseOptionChainDatatable.table = $event;
+  // }
   
 }

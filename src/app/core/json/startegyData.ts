@@ -84,3 +84,87 @@ export const bearPutSpreadData = [
         }
     }
 ]
+
+
+export const bullCallSpreadData = [
+    {
+        strikePrice: 470,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 480,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 490,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 500,
+        CE: {
+            lastPrice: 0.75
+        }
+    },
+    {
+        strikePrice: 510,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 520,
+        CE: {
+            
+            lastPrice: 20
+        }
+    },
+    {
+        strikePrice: 530,
+        CE: {
+            lastPrice: 9,
+        }
+    },
+    {
+        strikePrice: 540,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 550,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 560,
+        CE: {
+            lastPrice: 10,
+        }
+    },
+    {
+        strikePrice: 570,
+        CE: {
+            
+            lastPrice: 2.05
+        }
+    },
+    {
+        strikePrice: 580,
+        CE: {
+            lastPrice: 10
+        }
+    },
+    {
+        strikePrice: 590,
+        CE: {
+            lastPrice: 10
+        }
+    }
+]
