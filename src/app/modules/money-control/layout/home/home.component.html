@@ -1,1 +1,28 @@
-<p>home works!</p>
+<mat-sidenav-container autosize>
+    <mat-sidenav #sidenav mode="side" opened="true">
+        <mat-nav-list>
+            <mat-list-item [routerLink]="''">
+                <mat-icon mat-list-icon>home</mat-icon>
+                <span *ngIf="isExpanded">Dashboard</span>
+            </mat-list-item>
+            <mat-list-item [routerLink]="'index'">
+                <mat-icon mat-list-icon>important_devices</mat-icon>
+                <span *ngIf="isExpanded">Index</span>
+            </mat-list-item>
+            <mat-list-item [routerLink]="'stock'">
+                <mat-icon mat-list-icon>supervisor_account</mat-icon>
+                <span *ngIf="isExpanded">Stock</span>
+            </mat-list-item>
+        </mat-nav-list>
+    </mat-sidenav>
+    <div class="content">
+        <mat-toolbar color="primary">
+            <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="isExpanded = !isExpanded">
+                <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+            </button>
+            <span>algo-trade as</span>
+        </mat-toolbar>
+        <!-- Add Content Here -->
+        <router-outlet></router-outlet>
+    </div>
+</mat-sidenav-container>

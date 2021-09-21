@@ -39,7 +39,14 @@ ng g c shared/common/input-auto-complete
 ng g c shared/common/dynamic-table
 ng g c shared/common/chart
 
+ng g s shared/services/subject/subject
+
+
+
 ng g c modules/money-control/layout/home --module=money-control
+ng g c modules/money-control/components/index --module=money-control
+ng g c modules/money-control/components/stock --module=money-control
+ng g s modules/money-control/core/services/api/money-control/money-control --module=money-control
 
 ng g m modules/material --module=app
 

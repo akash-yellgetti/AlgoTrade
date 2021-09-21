@@ -3,26 +3,20 @@ import { CommonModule } from '@angular/common';
 
 import { MoneyControlRoutingModule } from './money-control-routing.module';
 import { NavigationComponent } from './layout/navigation/navigation.component';
-import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
 import { HomeComponent } from './layout/home/home.component';
+import { MaterialModule } from '../material/material.module';
+import { BrowserModule } from '@angular/platform-browser';
+import { IndexComponent } from './components/index/index.component';
+import { StockComponent } from './components/stock/stock.component';
 
 
 @NgModule({
-  declarations: [NavigationComponent, HomeComponent],
+  declarations: [NavigationComponent, HomeComponent, IndexComponent, StockComponent],
   imports: [
+    BrowserModule,
     CommonModule,
-    MoneyControlRoutingModule,
-    LayoutModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatListModule
+    MaterialModule,
+    MoneyControlRoutingModule
   ]
 })
 export class MoneyControlModule { }
