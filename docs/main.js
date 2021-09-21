@@ -936,19 +936,19 @@ class IndexComponent {
             intradayTable.ajax.url(nseUrl).load();
             // OTM Call
             const otmCallDatatable = this.dashboard.otmCallDatatable.table;
-            const otmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
+            const otmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
             otmCallDatatable.ajax.url(otmCallDatatableUrl).load();
             // OTM Put
             const otmPutDatatable = this.dashboard.otmPutDatatable.table;
-            const otmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
+            const otmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
             otmPutDatatable.ajax.url(otmPutDatatableUrl).load();
             // OTM Call
             const itmCallDatatable = this.dashboard.itmCallDatatable.table;
-            const itmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
+            const itmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
             itmCallDatatable.ajax.url(otmCallDatatableUrl).load();
             // OTM Put
             const itmPutDatatable = this.dashboard.itmPutDatatable.table;
-            const itmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
+            const itmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
             itmPutDatatable.ajax.url(otmPutDatatableUrl).load();
         };
         this.intradayDatatableEvt = ($event) => {
@@ -1305,7 +1305,7 @@ const optionSettings = {
         ajax: {
             url: "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=NIFTY&ExpiryDate=2021-09-23",
             method: "GET",
-            cache: false,
+            cache: true,
             timeout: 0,
             headers: {},
             dataSrc: function (json) {

@@ -95,7 +95,7 @@ const optionSettings = {
         ajax: {
             url: "https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=NIFTY&ExpiryDate=2021-09-23",
             method: "GET",
-            cache: false,
+            cache: true,
             timeout: 0,
             headers: {},
             dataSrc: function (json) {
