@@ -13,16 +13,11 @@ import { AppRoutingModule } from './app-routing.module';
 
 // Share Modules
 import { MoneyControlModule } from './modules/money-control/money-control.module';
-
-// Shared Components
-import { DatatableComponent } from './shared/components/datatable/datatable.component';
-import { SearchComponent } from './shared/components/search/search.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    DatatableComponent,
-    SearchComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +29,8 @@ import { SearchComponent } from './shared/components/search/search.component';
     MaterialModule,
     MoneyControlModule,
     LayoutModule,
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule
   ],
   providers: [],
   bootstrap: [AppComponent]
