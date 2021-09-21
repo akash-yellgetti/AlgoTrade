@@ -36,7 +36,8 @@
               "./src/assets/datatable/js/jquery.dataTables.min.js",
               "./src/assets/datatable/js/dataTables.bootstrap.min.js",
               "./src/assets/datatable/js/dataTables.rowReorder.min.js",
-              "./src/assets/datatable/js/dataTables.responsive.min.js"
+              "./src/assets/datatable/js/dataTables.responsive.min.js",
+              "./node_modules/apexcharts/dist/apexcharts.min.js"
             ]
           },
           "configurations": {

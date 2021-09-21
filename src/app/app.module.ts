@@ -9,7 +9,6 @@ import { FooterComponent } from './shared/layout/footer/footer.component';
 import { RightSidebarComponent } from './shared/layout/right-sidebar/right-sidebar.component';
 import { LeftSidebarComponent } from './shared/layout/left-sidebar/left-sidebar.component';
 import { InputAutoCompleteComponent } from './shared/common/input-auto-complete/input-auto-complete.component';
-import { DynamicTableComponent } from './shared/common/dynamic-table/dynamic-table.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataTablesModule } from 'angular-datatables';
 import { MaterialModule } from './modules/material/material.module';
@@ -18,6 +17,7 @@ import { NavigationComponent } from './shared/layout/navigation/navigation.compo
 import { LayoutModule } from '@angular/cdk/layout';
 import { DashboardComponent } from './shared/layout/dashboard/dashboard.component';
 import { DatatableComponent } from './../app/shared/common/datatable/datatable.component';
+import { NgApexchartsModule } from "ng-apexcharts";
 
 @NgModule({
   declarations: [
@@ -27,7 +27,6 @@ import { DatatableComponent } from './../app/shared/common/datatable/datatable.c
     RightSidebarComponent,
     LeftSidebarComponent,
     InputAutoCompleteComponent,
-    DynamicTableComponent,
     NavigationComponent,
     DashboardComponent,
     DatatableComponent
@@ -38,6 +37,7 @@ import { DatatableComponent } from './../app/shared/common/datatable/datatable.c
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    NgApexchartsModule,
     MaterialModule,
     MoneyControlModule,
     LayoutModule,

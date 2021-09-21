@@ -35,6 +35,7 @@ ng g s core/services/common/market/market-strategy
 ng g c shared/common/input-auto-complete
 ng g c shared/common/dynamic-table
 ng g c shared/common/datatable
+ng g c shared/common/chart
 
 ng g m modules/material --module=app
 
