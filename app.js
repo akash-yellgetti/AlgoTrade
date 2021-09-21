@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000;
+const port = process.env.PORT || '8000',
 //setting middleware
 // app.use(express.static(__dirname + 'docs')); //Serves resources from public folder
 // app.get('/', (req, res) => res.send('Node Hello World!'))
