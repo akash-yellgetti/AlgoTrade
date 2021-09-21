@@ -32,12 +32,17 @@ ng g s core/services/common/subject/subject
 ng g s core/services/common/market/market-strategy
 
 
+ng g c shared/common/datatable
+ng g c shared/common/search
+
 ng g c shared/common/input-auto-complete
 ng g c shared/common/dynamic-table
-ng g c shared/common/datatable
 ng g c shared/common/chart
 
+ng g c modules/money-control/layout/home --module=money-control
+
 ng g m modules/material --module=app
+
 
 
 ng generate @angular/material:navigation shared/layout/navigation

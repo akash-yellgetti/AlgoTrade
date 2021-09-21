@@ -18,6 +18,8 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { DashboardComponent } from './shared/layout/dashboard/dashboard.component';
 import { DatatableComponent } from './../app/shared/common/datatable/datatable.component';
 import { NgApexchartsModule } from "ng-apexcharts";
+import { AppRoutingModule } from './app-routing.module';
+import { SearchComponent } from './shared/common/search/search.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import { NgApexchartsModule } from "ng-apexcharts";
     InputAutoCompleteComponent,
     NavigationComponent,
     DashboardComponent,
-    DatatableComponent
+    DatatableComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
     MaterialModule,
     MoneyControlModule,
     LayoutModule,
-    DataTablesModule
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
