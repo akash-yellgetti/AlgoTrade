@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\algo-trade\src\polyfills.ts */"hN/g");
+module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\AlgoTrade\src\polyfills.ts */"hN/g");
 
 
 /***/ }),

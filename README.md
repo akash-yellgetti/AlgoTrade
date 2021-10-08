@@ -32,8 +32,8 @@ ng g s core/services/common/subject/subject
 ng g s core/services/common/market/market-strategy
 
 
-ng g c shared/common/datatable
-ng g c shared/common/search
+ng g c shared/components/datatable
+ng g c shared/components/search
 
 ng g c shared/common/input-auto-complete
 ng g c shared/common/dynamic-table

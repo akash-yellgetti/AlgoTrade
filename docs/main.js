@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\algo-trade\src\main.ts */"zUnb");
+module.exports = __webpack_require__(/*! C:\Users\Administrator\Desktop\AlgoTrade\src\main.ts */"zUnb");
 
 
 /***/ }),
@@ -725,7 +725,7 @@ HomeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComp
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "dashboard");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.isExpanded);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
@@ -929,26 +929,26 @@ class IndexComponent {
             const name = lodash__WEBPACK_IMPORTED_MODULE_1___default.a.get(index, 'name');
             const to = Math.round((new Date().getTime()) / 1000);
             const from = Math.round((new Date(new Date().setHours(0, 0, 0, 0)).getTime()) / 1000);
-            const expiryDate = '2021-09-23';
+            const expiryDate = '2021-10-14';
             // Intraday
             const intradayTable = this.dashboard.intradayDatatable.table;
             const nseUrl = 'https://priceapi.moneycontrol.com/techCharts/techChartController/history?symbol=' + index.id + '&resolution=15&from=' + from + '&to=' + to;
             intradayTable.ajax.url(nseUrl).load();
             // OTM Call
             const otmCallDatatable = this.dashboard.otmCallDatatable.table;
-            const otmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
+            const otmCallDatatableUrl = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=' + index.id + '&ExpiryDate=' + expiryDate;
             otmCallDatatable.ajax.url(otmCallDatatableUrl).load();
             // OTM Put
             const otmPutDatatable = this.dashboard.otmPutDatatable.table;
-            const otmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
+            const otmPutDatatableUrl = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id=' + index.id + '&ExpiryDate=' + expiryDate;
             otmPutDatatable.ajax.url(otmPutDatatableUrl).load();
             // OTM Call
             const itmCallDatatable = this.dashboard.itmCallDatatable.table;
-            const itmCallDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/CE/' + index.id + '/' + expiryDate;
+            const itmCallDatatableUrl = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=CE&id=' + index.id + '&ExpiryDate=' + expiryDate;
             itmCallDatatable.ajax.url(otmCallDatatableUrl).load();
             // OTM Put
             const itmPutDatatable = this.dashboard.itmPutDatatable.table;
-            const itmPutDatatableUrl = 'https://algo-trade-strategy.herokuapp.com/market/jsonapi/fno/overview/PE/' + index.id + '/' + expiryDate;
+            const itmPutDatatableUrl = 'https://appfeeds.moneycontrol.com/jsonapi/fno/overview&format=json&inst_type=options&option_type=PE&id=' + index.id + '&ExpiryDate=' + expiryDate;
             itmPutDatatable.ajax.url(otmPutDatatableUrl).load();
         };
         this.intradayDatatableEvt = ($event) => {

@@ -23,7 +23,7 @@ export class IndexComponent implements OnInit {
     const name = _.get(index,'name');
     const to = Math.round((new Date().getTime()) / 1000);
     const from = Math.round((new Date(new Date().setHours(0, 0, 0, 0)).getTime()) / 1000);
-    const expiryDate = '2021-09-23';
+    const expiryDate = '2021-10-14';
     // Intraday
     const intradayTable: any = this.dashboard.intradayDatatable.table;
     const nseUrl: string = 'https://priceapi.moneycontrol.com/techCharts/techChartController/history?symbol='+index.id+'&resolution=15&from='+from+'&to='+to;
